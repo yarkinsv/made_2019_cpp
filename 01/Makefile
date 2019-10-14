@@ -1,4 +1,4 @@
-CC=g++
+CC=g++ -std=c++14
 
 all: test main
 

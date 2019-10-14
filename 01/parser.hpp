@@ -9,6 +9,6 @@
 #ifndef parser_hpp
 #define parser_hpp
 
-float eval(const char* input);
+float eval(const std::string& input);
 
 #endif /* parser_hpp */
