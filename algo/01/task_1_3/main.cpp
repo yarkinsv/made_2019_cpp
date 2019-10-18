@@ -1,5 +1,8 @@
+// 1_3. Реализовать очередь с помощью двух стеков. Использовать стек, реализованный с помощью динамического буфера.
+// Яркин С.В.
+
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 #include <cstring>
 
 using namespace std;
@@ -14,6 +17,8 @@ public:
     int pop();
     // Добавляем элемент, если есть свободный слот в буфере
     bool try_push(int value);
+    // Нужно освободить буфер при удалении стека
+    ~Stack();
 
 private:
     // Пусть начальный размер буфера будет непустым, чтобы не обрабатывать граничный кейс
@@ -75,11 +80,16 @@ bool Stack::try_push(int value) {
 }
 
 void Stack::grow_buffer() {
+    // Просто удваиваем размер буфера, копируем в новый все данные текущего и удаляем его
     size *= 2;
     int* buffer_tmp = (int*) malloc(size * sizeof(int));
-    memcpy(buffer_tmp, buffer, size * sizeof(int) / 2);
+    memcpy(buffer_tmp, buffer, (head + 1) * sizeof(int));
     free(buffer);
     buffer = buffer_tmp;
+}
+
+Stack::~Stack() {
+    free(buffer);
 }
 
 bool Queue::empty() const {
@@ -87,6 +97,12 @@ bool Queue::empty() const {
 }
 
 void Queue::push(int value) {
+    // Привожу вариант с оптимизацией, было интересно поиграться со стратегиями расширения буфера.
+    // try_push() вообще говоря нестандартный метод для стека, поэтому если к этому есть претензии
+    // можно в этом методе оставить просто input_stack.push(value); и все будет работать точно также
+    // С этой оптимизацией я пытаюсь вместо очередного расширения стека входящих чисел, переложить их в выходной стек
+    // оказалось, что на примерах из контеста это работает: без оптимизации имеем время работы 0.543s и память 9.74Mb
+    // с данной оптимизацией получилось 0.532s и 4.11Mb, т.е. мы действительно сэкономили памяти, причем в два раза
     if (!input_stack.try_push(value)) {
         if (output_stack.empty()) {
             output_stack.push(value);
@@ -101,6 +117,7 @@ void Queue::push(int value) {
 
 int Queue::pop() {
     assert(!empty());
+    // Чтобы сформировать очередь из стека, перекидываем элементы из влохдного потока в выходной
     if (output_stack.empty()) {
         while (!input_stack.empty()) {
             output_stack.push(input_stack.pop());
