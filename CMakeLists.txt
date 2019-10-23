@@ -15,3 +15,8 @@ add_executable(cpp_02_test
         02/allocator.cpp
         02/allocator.hpp
         02/test.cpp)
+
+add_executable(cpp_03_test
+        03/tokenizer.cpp
+        03/tokenizer.hpp
+        03/test.cpp)
