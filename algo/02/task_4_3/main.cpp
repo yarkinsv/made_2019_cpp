@@ -79,5 +79,7 @@ int main() {
     }
 
     cout << quickSortK(array, 0, array_size - 1, k);
+
+    delete[] array;
     return 0;
 }

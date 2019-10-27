@@ -46,8 +46,8 @@ int* mergeSortTopK(const int* array, const int begin, const int end, const int t
             merged[i] = right_sorted_top_k[right_pointer++];
         }
     }
-    free(left_sorted_top_k);
-    free(right_sorted_top_k);
+    delete[] left_sorted_top_k;
+    delete[] right_sorted_top_k;
     return merged;
 }
 
@@ -67,7 +67,7 @@ int main() {
         cout << sorted_top_k_elements[i] << " ";
     }
 
-    free(array);
-    free(sorted_top_k_elements);
+    delete[] array;
+    delete[] sorted_top_k_elements;
     return 0;
 }
