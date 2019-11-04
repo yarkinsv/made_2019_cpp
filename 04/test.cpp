@@ -51,12 +51,13 @@ static const char* test4() {
 }
 
 static const char* test5() {
-    const Matrix m(5, 2);
-    m[1][1] = 10055;
-    mu_assert("FAIL: m[1][1] == 10055", m[1][1] == 10055);
+    int* arr = new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    const Matrix m(5, 2, arr);
+    mu_assert("FAIL: m[1][1] == 5", m[1][1] == 3);
     mu_assert("FAIL: m.getColumns() == 2", m.getColumns() == 2);
     mu_assert("FAIL: m.getRows() == 5", m.getRows() == 5);
     // m *= 2 - compilation error, m - const
+    // m[1][1] = 4;  -//-
     return nullptr;
 }
 

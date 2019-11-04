@@ -16,9 +16,19 @@ public:
             return matrix.matrix_buffer[row * matrix.cols + col];
         }
 
-    private:
+    protected:
         const Matrix& matrix;
         const int row;
+    };
+
+    class RowAccessorConst : RowAccessor {
+    public:
+        // using RowAccessor::RowAccessor; почему то не сработало в make, хотя в idea работало
+        RowAccessorConst(const Matrix& matrix, int row) : RowAccessor(matrix, row) {} ;
+
+        const int& operator [] (const int col) const {
+            return RowAccessor::operator[](col);
+        }
     };
 
     Matrix(const int rows, const int cols) : rows(rows), cols(cols) {
@@ -26,6 +36,11 @@ public:
         assert(cols > 0);
         matrix_buffer = new int[rows * cols];
         for (int i = 0; i < rows * cols; i++) matrix_buffer[i] = 0;
+    }
+
+    Matrix(const int rows, const int cols, int* init_buffer) : rows(rows), cols(cols), matrix_buffer(init_buffer) {
+        assert(rows > 0);
+        assert(cols > 0);
     }
 
     inline int getRows() const {
@@ -36,7 +51,14 @@ public:
         return cols;
     }
 
-    RowAccessor operator [] (const int row) const {
+    RowAccessorConst operator [] (const int row) const {
+        if (row < 0 || row >= rows) {
+            throw std::out_of_range("");
+        }
+        return RowAccessorConst(*this, row);
+    }
+
+    RowAccessor operator [] (const int row) {
         if (row < 0 || row >= rows) {
             throw std::out_of_range("");
         }
