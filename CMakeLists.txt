@@ -28,4 +28,5 @@ add_executable(cpp_03_test
         03/test.cpp)
 
 add_executable(cpp_04
-        04/matrix.cpp)
+        04/matrix.cpp
+        04/test.cpp)

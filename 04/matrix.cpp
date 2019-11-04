@@ -1,6 +1,5 @@
 
 #include <functional>
-#include <iostream>
 
 
 class Matrix
@@ -8,7 +7,7 @@ class Matrix
 public:
     class RowAccessor {
     public:
-        RowAccessor(Matrix& matrix, int row) : matrix(matrix), row(row) {};
+        RowAccessor(const Matrix& matrix, int row) : matrix(matrix), row(row) {} ;
 
         int& operator [] (const int col) const {
             if (col < 0 || col >= matrix.cols) {
@@ -26,6 +25,7 @@ public:
         assert(rows > 0);
         assert(cols > 0);
         matrix_buffer = new int[rows * cols];
+        for (int i = 0; i < rows * cols; i++) matrix_buffer[i] = 0;
     }
 
     inline int getRows() const {
@@ -36,7 +36,7 @@ public:
         return cols;
     }
 
-    RowAccessor operator [] (const int row) {
+    RowAccessor operator [] (const int row) const {
         if (row < 0 || row >= rows) {
             throw std::out_of_range("");
         }
@@ -77,13 +77,3 @@ private:
     const int cols;
     int* matrix_buffer;
 };
-
-int main(int argc, const char* argv[]) {
-    Matrix m(5, 2);
-
-    m[1][1] = 10055;
-    std::cout << m[1][1] << "\n";
-
-    m *= 2;
-    std::cout << m[1][1];
-}
