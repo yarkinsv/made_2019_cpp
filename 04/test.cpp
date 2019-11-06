@@ -57,7 +57,7 @@ static const char* test5() {
     mu_assert("FAIL: m.getColumns() == 2", m.getColumns() == 2);
     mu_assert("FAIL: m.getRows() == 5", m.getRows() == 5);
     // m *= 2 - compilation error, m - const
-    // m[1][1] = 4;  -//-
+    //m[1][1] = 4;//  -//-
     return nullptr;
 }
 
