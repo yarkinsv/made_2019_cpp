@@ -15,64 +15,74 @@ struct Node {
     Node* right_child;
 };
 
+void destroy_tree(Node* node) {
+    if (node != nullptr) {
+        destroy_tree(node->left_child);
+        destroy_tree(node->right_child);
+        delete node;
+    }
+}
 
 class BinaryTree {
 public:
     // Добавление элемента в дерево
-    void add(int value) {
-        Node* node = root;
-        Node* parent = nullptr;
-        bool left = true;
-        // Сначала находим лист дерева, к которому нужно присоединить новые элемент
-        while (node != nullptr) {
-            parent = node;
-            if (value <= node->value) {
-                node = node->left_child;
-                left = true;
-            } else {
-                node = node->right_child;
-                left = false;
-            }
-        }
-        // Создаем новый элемент и выстраиваем нужные связи, ссылка на parent для задачи не нужна
-        auto* newNode = new Node{value, nullptr, nullptr};
-        if (parent != nullptr) {
-            if (left) {
-                parent->left_child = newNode;
-            } else {
-                parent->right_child = newNode;
-            }
-        } else {
-            root = newNode;
-        }
-    }
+    void add(int value);
 
     // Обход графа в клубину, на каждый посещенный узел вызов функции callback
-    void pre_order(const std::function<void (Node&)>& callback) {
-        // Для обхода в глубину используется очередь
-        std::vector<Node*> queue;
-        queue.push_back(root);
-        while (!queue.empty()) {
-            Node* node = queue.back();
-            queue.pop_back();
-            callback(*node);
-            if (node->right_child != nullptr) {
-                queue.push_back(node->right_child);
-            }
-            if (node->left_child != nullptr) {
-                queue.push_back(node->left_child);
-            }
-        }
-    }
+    void pre_order(const std::function<void (Node&)>& callback);
 
     ~BinaryTree() {
-        pre_order([] (Node& node) { delete &node; });
+        destroy_tree(this->root);
     }
 
 private:
     Node* root = nullptr;
 };
 
+void BinaryTree::add(int value) {
+    Node* node = root;
+    Node* parent = nullptr;
+    bool left = true;
+    // Сначала находим лист дерева, к которому нужно присоединить новые элемент
+    while (node != nullptr) {
+        parent = node;
+        if (value <= node->value) {
+            node = node->left_child;
+            left = true;
+        } else {
+            node = node->right_child;
+            left = false;
+        }
+    }
+    // Создаем новый элемент и выстраиваем нужные связи, ссылка на parent для задачи не нужна
+    auto* newNode = new Node{value, nullptr, nullptr};
+    if (parent != nullptr) {
+        if (left) {
+            parent->left_child = newNode;
+        } else {
+            parent->right_child = newNode;
+        }
+    } else {
+        root = newNode;
+    }
+}
+
+void BinaryTree::pre_order(const std::function<void (Node&)>& callback) {
+    // Для обхода в глубину используется стек
+    std::vector<Node*> stack;
+    stack.push_back(root);
+    while (!stack.empty()) {
+        Node* node = stack.back();
+        stack.pop_back();
+        callback(*node);
+        if (node->right_child != nullptr) {
+            stack.push_back(node->right_child);
+        }
+        if (node->left_child != nullptr) {
+            stack.push_back(node->left_child);
+        }
+    }
+}
 
 int main() {
     BinaryTree tree;
