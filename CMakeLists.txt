@@ -17,6 +17,9 @@ add_executable(algo_2_1
 add_executable(algo_2_2
         algo/02/task_4_3/main.cpp)
 
+add_executable(algo_4
+        algo/04/task_8/main.cpp)
+
 add_executable(cpp_02_test
         02/allocator.cpp
         02/allocator.hpp
