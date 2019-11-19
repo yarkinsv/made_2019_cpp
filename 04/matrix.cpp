@@ -9,14 +9,14 @@ public:
     public:
         RowAccessor(const Matrix& matrix, size_t row) : matrix(matrix), row(row) {} ;
 
-        const int& operator [] (const int col) const {
+        const int& operator [] (const size_t col) const {
             if (col < 0 || col >= matrix.cols) {
                 throw std::out_of_range("");
             }
             return matrix.matrix_buffer[row * matrix.cols + col];
         }
 
-        int& operator [] (const int col) {
+        int& operator [] (const size_t col) {
             if (col < 0 || col >= matrix.cols) {
                 throw std::out_of_range("");
             }
@@ -28,29 +28,29 @@ public:
         const size_t row;
     };
 
-    Matrix(const int rows, const int cols) : rows(rows), cols(cols) {
+    Matrix(const size_t rows, const size_t cols) : rows(rows), cols(cols) {
         matrix_buffer = new int[rows * cols];
-        for (int i = 0; i < rows * cols; i++) matrix_buffer[i] = 0;
+        for (size_t i = 0; i < rows * cols; i++) matrix_buffer[i] = 0;
     }
 
-    Matrix(const int rows, const int cols, int* init_buffer) : rows(rows), cols(cols), matrix_buffer(init_buffer) {}
+    Matrix(const size_t rows, const size_t cols, int* init_buffer) : rows(rows), cols(cols), matrix_buffer(init_buffer) {}
 
-    int getRows() const {
+    size_t getRows() const {
         return rows;
     }
 
-    int getColumns() const {
+    size_t getColumns() const {
         return cols;
     }
 
-    const RowAccessor operator [] (const int row) const {
+    const RowAccessor operator [] (const size_t row) const {
         if (row < 0 || row >= rows) {
             throw std::out_of_range("");
         }
         return RowAccessor(*this, row);
     }
 
-    RowAccessor operator [] (const int row) {
+    RowAccessor operator [] (const size_t row) {
         if (row < 0 || row >= rows) {
             throw std::out_of_range("");
         }
@@ -58,7 +58,7 @@ public:
     }
 
     Matrix& operator *= (const int multiplier) {
-        for (int i = 0; i < rows * cols; i++) {
+        for (size_t i = 0; i < rows * cols; i++) {
             matrix_buffer[i] *= multiplier;
         }
         return *this;
@@ -72,7 +72,7 @@ public:
             return false;
         }
 
-        for (int i = 0; i < rows * cols; i++)
+        for (size_t i = 0; i < rows * cols; i++)
             if (matrix_buffer[i] != other.matrix_buffer[i])
                 return false;
 
@@ -88,7 +88,7 @@ public:
     }
 
 private:
-    const int rows;
-    const int cols;
+    const size_t rows;
+    const size_t cols;
     int* matrix_buffer;
 };
