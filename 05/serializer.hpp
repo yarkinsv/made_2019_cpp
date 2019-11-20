@@ -17,7 +17,7 @@ public:
     }
 
     template <class... ArgsT>
-    Error operator()(ArgsT... args) {
+    Error operator()(ArgsT&&... args) {
         return process(args...);
     }
 
@@ -31,14 +31,12 @@ private:
         return process(std::forward<Args>(args)...);
     }
 
-    template <>
-    Error process<uint64_t&>(uint64_t& val) {
+    Error process(uint64_t& val) {
         out_ << val << Separator;
         return Error::NoError;
     }
 
-    template <>
-    Error process<bool&>(bool& val) {
+    Error process(bool& val) {
         out_ << (val ? "true" : "false") << Separator;
         return Error::NoError;
     }
@@ -70,13 +68,12 @@ private:
         return process(std::forward<Args>(args)...);
     }
 
-    template <>
-    Error process<uint64_t&>(uint64_t& val) {
+    Error process(uint64_t& val) {
         std::string text;
         in_ >> text;
 
         for (char c : text) {
-            if (c < '0' || c > '9') {
+            if (!std::isdigit(c)) {
                 return Error::CorruptedArchive;
             }
         }
@@ -85,8 +82,7 @@ private:
         return Error::NoError;
     }
 
-    template <>
-    Error process<bool&>(bool& val) {
+    Error process(bool& val) {
         std::string text;
         in_ >> text;
 
