@@ -16,67 +16,82 @@ int hash(const std::string& str, int m) {
 
 class StringSet {
 public:
+    StringSet() : StringSet(8) {}
+    StringSet(size_t n) :
+            buffer(std::vector<std::string>(n, "")),
+            deleted(std::vector<bool>(n, false)),
+            limit(n),
+            size(0) {}
+
     // Добавление строки во множество
-    bool add(const std::string& str);
+    bool add(std::string& str);
     // Удаление строки из множества
     bool remove(const std::string& str);
     // Проверям вхождение элемента во множество
-    bool contains(const std::string& str) const;
+    bool contains(const std::string& str);
 
 private:
-    size_t limit = 8;
-    size_t size = 0;
-    std::vector<std::string> buffer = {"", "", "", "", "", "", "", ""};
+    size_t limit;
+    size_t size;
+    std::vector<std::string> buffer;
+    std::vector<bool> deleted;
+    bool expanding = false;
     // Расширение буфера
     void expand();
     // Поиск индекса, по которому уже распологается или должна будет расположиться строка
-    int find(const std::string& str) const;
+    size_t find(const std::string& str);
 };
 
-bool StringSet::add(const std::string& str) {
-    int index = find(str);
+bool StringSet::add(std::string& str) {
+    size_t index = find(str);
     if (buffer[index].empty()) {
-        buffer[index] = str;
+        buffer[index] = std::move(str);
         size++;
         if (size > 3 * (limit / 4)) {
             expand();
         }
+        return true;
+    } else if (deleted[index]) {
+        deleted[index] = false;
         return true;
     }
     return false;
 }
 
 bool StringSet::remove(const std::string& str) {
-    int index = find(str);
-    if (!buffer[index].empty()) {
-        buffer[index] = "";
-        size--;
+    size_t index = find(str);
+    if (!buffer[index].empty() && !deleted[index]) {
+        deleted[index] = true;
         return true;
     }
     return false;
 }
 
-bool StringSet::contains(const std::string& str) const {
-    return !buffer[find(str)].empty();
+bool StringSet::contains(const std::string& str) {
+    size_t index = find(str);
+    return !buffer[index].empty() && !deleted[index];
 }
 
 void StringSet::expand() {
-    std::vector<std::string> old_buffer = buffer;
-    limit *= 2;
-    buffer = std::vector<std::string>(limit, "");
-    for (int i = 0; i < limit / 2; i++) {
-        if (!old_buffer[i].empty()) {
-            add(old_buffer[i]);
+    StringSet stringSet(limit * 2);
+    for (size_t i = 0; i < limit; i++) {
+        if (!deleted[i] && !buffer[i].empty()) {
+            stringSet.add(buffer[i]);
         }
     }
-    std::cout << "";
-    return;
+    this->buffer = std::move(stringSet.buffer);
+    this->deleted = std::move(stringSet.deleted);
+    this->size = stringSet.size;
+    this->limit = stringSet.limit;
 }
 
-int StringSet::find(const std::string& str) const {
-    int index = hash(str, limit);
-    while (!buffer[index].empty() && buffer[index] != str) {
-        index++;
+size_t StringSet::find(const std::string& str) {
+    size_t index = hash(str, limit);
+    size_t i = 0;
+
+    while ((!buffer[index].empty() || deleted[index]) && buffer[index] != str) {
+        i++;
+        index = (index + i + 1) % limit;
     }
     return index;
 }
@@ -85,27 +100,19 @@ int StringSet::find(const std::string& str) const {
 int main() {
     StringSet table;
     char command = ' ';
-    for (int i = 0; i < 100000; i++) {
-        table.add(std::to_string(i));
+    std::string value;
+    while (std::cin >> command >> value) {
+        switch (command) {
+            case '?':
+                std::cout << (table.contains(value) ? "OK" : "FAIL") << std::endl;
+                break;
+            case '+':
+                std::cout << (table.add(value) ? "OK" : "FAIL") << std::endl;
+                break;
+            case '-':
+                std::cout << (table.remove(value) ? "OK" : "FAIL") << std::endl;
+                break;
+        }
     }
-    for (int i = 0; i < 100000; i++) {
-        table.contains(std::to_string(i));
-        table.remove(std::to_string(i));
-        table.contains(std::to_string(i));
-    }
-//    std::string value;
-//    while (std::cin >> command >> value) {
-//        switch (command) {
-//            case '?':
-//                std::cout << (table.contains(value) ? "OK" : "FAIL") << std::endl;
-//                break;
-//            case '+':
-//                std::cout << (table.add(value) ? "OK" : "FAIL") << std::endl;
-//                break;
-//            case '-':
-//                std::cout << (table.remove(value) ? "OK" : "FAIL") << std::endl;
-//                break;
-//        }
-//    }
     return 0;
 }
