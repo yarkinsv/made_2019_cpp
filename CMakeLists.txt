@@ -41,3 +41,7 @@ add_executable(cpp_06_test
         06/bigint.cpp
         06/bigint.hpp
         06/test.cpp)
+
+add_executable(cpp_07
+        07/format.cpp
+        07/test.cpp)
