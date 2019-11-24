@@ -8,7 +8,7 @@
 int tests_run = 0;
 
 static const char* test1() {
-    auto text = format("{1}+{1} = {0}", 2, "one");
+    auto text = format("{1}+{1} = {0}", 2, "one", 34, 4, 23, "3");
     assert(text == "one+one = 2");
 }
 
