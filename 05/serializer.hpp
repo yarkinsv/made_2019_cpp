@@ -16,13 +16,13 @@ public:
         return object.serialize(*this);
     }
 
-    template <class... ArgsT>
-    Error operator()(ArgsT&&... args) {
-        return process(args...);
+    template <class... Args>
+    Error operator()(Args&&... args) {
+        return process(std::forward<Args>(args)...);
     }
 
 private:
-    template <typename T, typename... Args>
+    template <class T, class... Args>
     Error process(T&& val, Args&&... args) {
         Error error = process(val);
         if (error != Error::NoError) {
@@ -53,13 +53,13 @@ public:
         return object.serialize(*this);
     }
 
-    template <class... ArgsT>
-    Error operator()(ArgsT&&... args) {
-        return process(args...);
+    template <class... Args>
+    Error operator()(Args&&... args) {
+        return process(std::forward<Args>(args)...);
     }
 
 private:
-    template <typename T, typename... Args>
+    template <class T, class... Args>
     Error process(T&& val, Args&&... args) {
         Error error = process(val);
         if (error != Error::NoError) {
