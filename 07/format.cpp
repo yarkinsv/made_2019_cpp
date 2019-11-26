@@ -1,27 +1,36 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <iterator>
 
 
 template<typename T>
-void format_n(int n, std::stringstream& out, T&& t) {
-    out << t;
+std::string to_str(T&& t) {
+    std::stringstream ss;
+    ss << t;
+    return ss.str();
+}
+
+
+template<typename T>
+std::vector<std::string> my_to_string(T&& t) {
+    return std::vector<std::string>{to_str(t)};
 }
 
 
 template<typename T, typename... Args>
-void format_n(int n, std::stringstream& out, T&& t, Args&&... args) {
-    if (n == 0) {
-        out << t;
-    } else {
-        format_n(n - 1, out, std::forward<Args>(args)...);
-    }
+std::vector<std::string> my_to_string(T&& t, Args&&... args) {
+    auto v = my_to_string(std::forward<Args>(args)...);
+    v.push_back(to_str(t));
+    return v;
 }
 
-template<typename T, typename... Args>
-std::string format(const std::string& str, T&& t, Args&&... args) {
-    std::stringstream out;
-    size_t args_num = sizeof...(args) + 1;
+template<typename... Args>
+std::string format(const std::string& str, Args&&... args) {
+    std::string out;
+    std::vector<std::string> args_string{ my_to_string(std::forward<Args>(args)...) };
+    size_t args_num = sizeof...(args);
     size_t start_argument = 0;
     bool found_argument = false;
     for (size_t i = 0; i < str.length(); i++) {
@@ -43,7 +52,7 @@ std::string format(const std::string& str, T&& t, Args&&... args) {
                 if (arg_num >= args_num) {
                     throw std::runtime_error("Argument number " + std::to_string(arg_num) + " was not provided");
                 }
-                format_n(arg_num, out, t, std::forward<Args>(args)...);
+                out += args_string[args_num - arg_num - 1];
                 found_argument = false;
                 break;
             }
@@ -53,10 +62,10 @@ std::string format(const std::string& str, T&& t, Args&&... args) {
                         throw std::runtime_error("Unknown symbol as argument number: " + std::string{c});
                     }
                 } else {
-                    out << c;
+                    out += c;
                 }
                 break;
         }
     }
-    return out.str();
+    return out;
 }
