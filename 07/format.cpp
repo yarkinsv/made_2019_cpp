@@ -13,23 +13,10 @@ std::string to_str(T&& t) {
 }
 
 
-template<typename T>
-std::vector<std::string> my_to_string(T&& t) {
-    return std::vector<std::string>{to_str(t)};
-}
-
-
-template<typename T, typename... Args>
-std::vector<std::string> my_to_string(T&& t, Args&&... args) {
-    auto v = my_to_string(std::forward<Args>(args)...);
-    v.push_back(to_str(t));
-    return v;
-}
-
 template<typename... Args>
 std::string format(const std::string& str, Args&&... args) {
     std::string out;
-    std::vector<std::string> args_string{ my_to_string(std::forward<Args>(args)...) };
+    std::vector<std::string> args_string{ to_str(std::forward<Args>(args))... };
     size_t args_num = sizeof...(args);
     size_t start_argument = 0;
     bool found_argument = false;
@@ -52,7 +39,7 @@ std::string format(const std::string& str, Args&&... args) {
                 if (arg_num >= args_num) {
                     throw std::runtime_error("Argument number " + std::to_string(arg_num) + " was not provided");
                 }
-                out += args_string[args_num - arg_num - 1];
+                out += args_string[arg_num];
                 found_argument = false;
                 break;
             }
