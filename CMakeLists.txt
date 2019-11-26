@@ -37,7 +37,13 @@ add_executable(cpp_04
         04/matrix.cpp
         04/test.cpp)
 
+
+add_executable(cpp_05_test
+        05/serializer.hpp
+        05/test.cpp)
+
 add_executable(cpp_06_test
         06/bigint.cpp
         06/bigint.hpp
         06/test.cpp)
+
