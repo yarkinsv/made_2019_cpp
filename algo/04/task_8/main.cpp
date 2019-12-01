@@ -28,7 +28,7 @@ public:
     // Удаление строки из множества
     bool remove(const std::string& str);
     // Проверям вхождение элемента во множество
-    bool contains(const std::string& str);
+    bool contains(const std::string& str) const;
 
 private:
     size_t limit;
@@ -39,7 +39,7 @@ private:
     // Расширение буфера
     void expand();
     // Поиск индекса, по которому уже распологается или должна будет расположиться строка
-    size_t find(const std::string& str);
+    size_t find(const std::string& str) const;
 };
 
 bool StringSet::add(std::string& str) {
@@ -67,7 +67,7 @@ bool StringSet::remove(const std::string& str) {
     return false;
 }
 
-bool StringSet::contains(const std::string& str) {
+bool StringSet::contains(const std::string& str) const {
     size_t index = find(str);
     return !buffer[index].empty() && !deleted[index];
 }
@@ -79,18 +79,20 @@ void StringSet::expand() {
             stringSet.add(buffer[i]);
         }
     }
-    this->buffer = std::move(stringSet.buffer);
-    this->deleted = std::move(stringSet.deleted);
-    this->size = stringSet.size;
-    this->limit = stringSet.limit;
+    buffer = std::move(stringSet.buffer);
+    deleted = std::move(stringSet.deleted);
+    size = stringSet.size;
+    limit = stringSet.limit;
 }
 
-size_t StringSet::find(const std::string& str) {
+size_t StringSet::find(const std::string& str) const {
     size_t index = hash(str, limit);
     size_t i = 0;
 
     while ((!buffer[index].empty() || deleted[index]) && buffer[index] != str) {
-        i++;
+        if (++i > limit) {
+            throw std::runtime_error("inconsistent state of stringset");
+        }
         index = (index + i + 1) % limit;
     }
     return index;
