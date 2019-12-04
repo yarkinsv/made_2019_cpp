@@ -17,8 +17,16 @@ add_executable(algo_2_1
 add_executable(algo_2_2
         algo/02/task_4_3/main.cpp)
 
+
 add_executable(algo_4
         algo/04/task_8/main.cpp)
+
+add_executable(algo_6_1
+        algo/03/task_6_1/main.cpp)
+
+add_executable(algo_7_3
+        algo/03/task_7_3/main.cpp)
+
 
 add_executable(cpp_02_test
         02/allocator.cpp
@@ -29,3 +37,18 @@ add_executable(cpp_03_test
         03/tokenizer.cpp
         03/tokenizer.hpp
         03/test.cpp)
+
+add_executable(cpp_04
+        04/matrix.cpp
+        04/test.cpp)
+
+
+add_executable(cpp_05_test
+        05/serializer.hpp
+        05/test.cpp)
+
+add_executable(cpp_06_test
+        06/bigint.cpp
+        06/bigint.hpp
+        06/test.cpp)
+
