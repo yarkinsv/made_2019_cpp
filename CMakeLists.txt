@@ -17,11 +17,16 @@ add_executable(algo_2_1
 add_executable(algo_2_2
         algo/02/task_4_3/main.cpp)
 
+
+add_executable(algo_4
+        algo/04/task_8/main.cpp)
+
 add_executable(algo_6_1
         algo/03/task_6_1/main.cpp)
 
 add_executable(algo_7_3
         algo/03/task_7_3/main.cpp)
+
 
 add_executable(cpp_02_test
         02/allocator.cpp
