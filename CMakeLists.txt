@@ -54,5 +54,4 @@ add_executable(cpp_06_test
 
 add_executable(cpp_08_test
         08/myvector.cpp
-        08/myvector.h
-        08/test.cpp)
+        08/myvector.h)
