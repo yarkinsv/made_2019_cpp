@@ -52,3 +52,6 @@ add_executable(cpp_06_test
         06/bigint.hpp
         06/test.cpp)
 
+add_executable(cpp_08_test
+        08/myvector.cpp
+        08/myvector.h)
