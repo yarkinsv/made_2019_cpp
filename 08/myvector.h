@@ -7,11 +7,11 @@ template <class T>
 class Allocator {
 public:
     T* allocate(size_t n) {
-        return new T[n];
+        return reinterpret_cast<T*>(malloc(sizeof(T) * n));
     }
 
     void deallocate(T* p, size_t n) {
-        delete[] p;
+        free(p);
     }
 };
 
@@ -57,7 +57,7 @@ public:
     }
 };
 
-template <class T, class Alloc = Allocator<T>>
+template <class T, class Alloc = std::allocator>
 class Vector {
 public:
     using iterator = Iterator<T>;
@@ -66,7 +66,7 @@ public:
 
     Vector(size_type count) : size_(count), buffer_(alloc_.allocate(count)), cur_(count) {
         for (size_type i = 0; i < count; i++) {
-            buffer_[i] = value_type();
+            new (buffer_ + i) value_type();
         }
     }
 
@@ -115,12 +115,18 @@ public:
             return;
         }
         value_type * new_buf = alloc_.allocate(count);
-        memcpy(new_buf, buffer_, sizeof(value_type) * std::min(cur_, count));
-        for (size_type i = cur_; i < count; i++) {
-            buffer_[i] = value_type();
+
+        for (size_type i = 0; i < std::min(cur_, count); i++) {
+            new (new_buf + i) value_type(buffer_[i]);
         }
+
+        for (size_type i = cur_; i < count; i++) {
+            new (new_buf + i) value_type();
+        }
+
+        alloc_.deallocate(buffer_, size_);
+        size_ = count;
         buffer_ = new_buf;
-        delete[] new_buf;
     }
 
     void reserve(size_type new_cap) {

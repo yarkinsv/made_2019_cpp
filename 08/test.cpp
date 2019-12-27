@@ -1,5 +1,6 @@
 #include "myvector.h"
 #include <iostream>
+#include <cmath>
 
 #define mu_assert(message, test) do { if (!(test)) return message; } while (0)
 #define mu_run_test(test) do { const char* message = test(); tests_run++; \
@@ -25,7 +26,7 @@ static const char* test2() {
     std::set<int> data2(data1.begin(), data1.end());
     sum = 0;
     std::for_each(data2.begin(), data2.end(), [&sum](int x) { sum += x; });
-    mu_assert("sum == 26", sum == 26);
+    mu_assert("sum == 19", sum == 19);
 
     return nullptr;
 }
@@ -35,10 +36,12 @@ static const char* test3() {
     v.push_back(1.1);
     v.push_back(10.0);
     v.push_back(3);
-    mu_assert("v[0] == 1", v[0] == 1.1);
-    mu_assert("v[1] == 2", v[1] == 10);
-    mu_assert("v[2] == 3", v[2] == 3);
-    mu_assert("v.size() == 3", v.size() == 3);
+    float eps = 0.001;
+    mu_assert("v[0] == 0", fabs(v[0] - 0) < eps);
+    mu_assert("v[1] == 1.1", fabs(v[1] - 1.1) < eps);
+    mu_assert("v[2] == 10.0", fabs(v[2] - 10.0) < eps);
+    mu_assert("v[3] == 3.0", fabs(v[3] - 3.0) < eps);
+    mu_assert("v.size() == 4", v.size() == 4);
     return nullptr;
 }
 
