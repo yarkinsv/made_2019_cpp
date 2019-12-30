@@ -60,3 +60,8 @@ add_executable(cpp_07
         07/format.cpp
         07/test.cpp)
 
+add_executable(alg_16
+        algo/16/main.cpp)
+
+add_executable(alg_17
+        algo/17/main.cpp)
