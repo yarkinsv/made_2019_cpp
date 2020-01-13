@@ -11,6 +11,8 @@ int tests_run = 0;
 static const char* test1() {
     Vector v = { 1, 2, 3 };
     v[1] = 10;
+    auto b = v.begin();
+    b++;
     mu_assert("v[0] == 1", v[0] == 1);
     mu_assert("v[1] == 2", v[1] == 10);
     mu_assert("v[2] == 3", v[2] == 3);

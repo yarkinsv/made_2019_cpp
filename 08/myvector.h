@@ -17,8 +17,23 @@ public:
 
 template <class T>
 class Iterator : public std::iterator<std::random_access_iterator_tag, T> {
+    using difference_type = int;
+    using value_type = T;
+    using pointer = T*;
+    using reference = T&;
+    using iterator_category = std::random_access_iterator_tag;
+
     T* current_;
     bool reverse_;
+
+    void shift(int n) {
+        if (reverse_) {
+            current_ -= n;
+        } else {
+            current_ += n;
+        }
+    }
+
 public:
     Iterator(T* current, bool reverse) : current_(current), reverse_(reverse) { }
 
@@ -30,22 +45,63 @@ public:
         return !(*this == other);
     }
 
-    Iterator& operator++() {
-        if (reverse_) {
-            current_--;
-        } else {
-            current_++;
-        }
+    int operator-(const Iterator& other) {
+        return current_ - other.current_;
+    }
+
+    bool operator<(const Iterator& other) const {
+        return this - other > 0;
+    }
+
+    bool operator>(const Iterator& other) const {
+        return other < this;
+    }
+
+    bool operator>=(const Iterator& other) const {
+        return !(this < other);
+    }
+
+    bool operator<=(const Iterator& other) const {
+        return !(this > other);
+    }
+
+    Iterator& operator--() {
+        shift(-1);
         return *this;
     }
 
-    Iterator& operator+(int n) {
-        if (reverse_) {
-            current_ -= n;
-        } else {
-            current_ += n;
-        }
+    Iterator& operator++() {
+        shift(1);
         return *this;
+    }
+
+    Iterator operator--(int) {
+        Iterator it = *this;
+        shift(-1);
+        return it;
+    }
+
+    Iterator operator++(int) {
+        Iterator it = *this;
+        shift(1);
+        return it;
+    }
+
+    Iterator operator+(Iterator::difference_type n) {
+        return Iterator { reverse_ ? current_ - n : current_ + n, reverse_ };
+    }
+
+    Iterator operator-(int n) {
+        return this + -n;
+    }
+
+    Iterator& operator+=(int n) {
+        shift(n);
+        return *this;
+    }
+
+    Iterator& operator-=(int n) {
+        return this += -n;
     }
 
     T operator*() const {
@@ -57,7 +113,7 @@ public:
     }
 };
 
-template <class T, class Alloc = std::allocator>
+template <class T, class Alloc = Allocator<T>>
 class Vector {
 public:
     using iterator = Iterator<T>;
